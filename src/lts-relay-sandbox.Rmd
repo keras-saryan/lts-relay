@@ -1,0 +1,128 @@
+---
+title: "LTS Relay Analysis Sandbox"
+author: "Keras Saryan"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+library("scales")
+library("extrafont")
+library("tidyverse")
+library("ggrepel")
+
+fontCustom <- "Fira Sans"
+themeCustom <- theme_bw() + theme(text = element_text(family = fontCustom))
+theme_set(themeCustom)
+rm(themeCustom)
+
+lts <- read.csv("lts-relay.csv", header=TRUE, sep="\t", stringsAsFactors=FALSE, encoding="UTF-8")
+```
+
+```{r time}
+lts <- lts %>%
+    mutate(time_spent = difftime(lead(receipt_date), receipt_date))
+
+hsize <- 5
+
+lts %>%
+    drop_na() %>%
+    ggplot(aes(x = hsize, y = time_spent, fill = reorder(participant, -stage))) +
+    geom_col(colour = "black") +
+    geom_label(aes(label = paste(participant, "–", time_spent, "days")), colour = "black", position = position_stack(vjust = 0.5), family = fontCustom) +
+    coord_polar(theta = "y") +
+    xlim(c(0.2, hsize + 0.5)) +
+    theme_void() +
+    theme(legend.position = "none")
+
+lts %>%
+    drop_na() %>%
+    mutate(lab_adjust = (time_spent / 2) + difftime(receipt_date, "2023-12-31", units = "days")) %>%
+    mutate(x = "x") %>%
+    ggplot(aes(fill = reorder(participant, -stage))) + 
+    geom_bar(aes(x = x, y = time_spent), stat = "identity") +
+    geom_label(aes(x, y = lab_adjust, label = participant), colour = "white", family = fontCustom, vjust = -0.75) +
+    geom_label(aes(x, y = lab_adjust, label = paste(time_spent, "days")), colour = "white", family = fontCustom, vjust = 0.75) +
+    coord_flip() +
+    theme(legend.position = "none") +
+    labs(x = element_blank(), y = "Days elapsed since receipt of the first torch") +
+    theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+```
+
+```{r relay_stages}
+lts %>%
+    ggplot(aes(x = stage, y = nword_lg))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N words in conlang text")
+
+lts %>%
+    ggplot(aes(x = stage, y = nchar_lg))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N characters in conlang text")
+
+lts %>%
+    ggplot(aes(x = stage, y = nword_en))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N words in English translation")
+
+lts %>%
+    ggplot(aes(x = stage, y = nchar_en))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N characters in English translation")
+```
+
+
+```{r word-character_correlations}
+lts %>%
+    ggplot(aes(x = nword_lg, y = nchar_lg))+
+    geom_line(stat = "smooth", method ="lm", alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    theme(legend.position = "none") +
+    labs(x = "N words in conlang text", y = "N characters in conlang text")
+
+lts %>%
+    ggplot(aes(x = nword_en, y = nchar_en))+
+    geom_line(stat = "smooth", method ="lm", alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    theme(legend.position = "none") +
+    labs(x = "N words in English translation", y = "N characters in English translation")
+
+lts %>%
+    ggplot(aes(x = nword_lg, y = nword_en))+
+    geom_line(stat = "smooth", method ="lm", alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    theme(legend.position = "none") +
+    labs(x = "N words in conlang text", y = "N words in English translation")
+
+lts %>%
+    ggplot(aes(x = nchar_lg, y = nchar_en))+
+    geom_line(stat = "smooth", method ="lm", alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text_repel(aes(label = language, colour = language, family = fontCustom)) +
+    theme(legend.position = "none") +
+    labs(x = "N characters in conlang text", y = "N characters in English translation")
+```

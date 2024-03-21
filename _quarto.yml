@@ -1,0 +1,23 @@
+project:
+ type: website
+
+website:
+ title: "LTS Relay"
+ description: "A conlang relay showcase"
+ site-url: https://keras-saryan.github.io/lts-relay
+ favicon: assets/img/favicon.ico
+ navbar:
+  collapse-below: xl
+  pinned: false
+  logo: assets/img/logo.png
+
+format:
+ html:
+  page-layout: article
+  css: assets/custom.css
+  theme:
+   light: assets/light.scss
+   dark: assets/dark.scss
+  toc: true
+
+editor: source

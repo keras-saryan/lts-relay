@@ -1,0 +1,547 @@
+---
+format: html
+knitr:
+  opts_chunk: 
+    echo: false
+    message: false
+    warning: false
+    dev: [lightsvgdev, darksvgdev]
+    fig.ext: [light.svg, dark.svg]
+    fig-align: center
+    fig-width: 7
+    fig-height: 4
+include-after-body:
+  text: |
+    <script type="application/javascript" src="assets/light-dark.js"></script>
+---
+
+```{r setup}
+library("scales")
+library("tidyverse")
+library("extrafont")
+library("ggdark")
+
+lts <- read.csv("./src/lts-relay.csv", header=TRUE, sep="\t", stringsAsFactors=FALSE, encoding="UTF-8")
+
+fontCustom <- "Fira Sans"
+
+theme_light <- function() {
+  theme_bw() %+%
+  theme(text = element_text(family = fontCustom))
+}
+
+theme_dark <- function() {
+  dark_theme_bw() %+%
+  theme(text = element_text(family = fontCustom))
+}
+
+lightsvgdev <- function(file, width, height) {
+  on.exit(reset_theme_settings())
+  theme_set(theme_light())
+  ggsave(
+    filename = file,
+    width = width,
+    height = height,
+    dev = "svg",
+    bg = "transparent"
+  )
+}
+
+darksvgdev <- function(file, width, height) {
+  on.exit(reset_theme_settings())
+  theme_set(theme_dark())
+  ggsave(
+    filename = file,
+    width = width,
+    height = height,
+    dev = "svg",
+    bg = "transparent"
+  )
+}
+
+theme_set(theme_light())
+```
+
+# ❓ About
+
+This website showcases the results of the LTS Relay (<span style="font-variant: small-caps;">aka</span> The Relayening), a conlang relay involving members of the [LangTime Studio](https://www.youtube.com/@LangTimeStudio){target="_blank" title="Go to LangTime Studio on YouTube"} Discord server. However, as it was not signed off on by CEO Bib Larid(i)on, Esq., it does not constitute an officially-sanctioned LangTime Corp enterprise.
+
+# 🗓 Participants and schedule
+
+The table below shows the eight participants that took part in the relay, the languages used as well as the intended and actual schedule. A link to PDF copies of each torch document is also provided; these can also be viewed [below](#the-torches). Each participant was given a week to decipher and translate the text and craft their torch document; however, this relay took a very laid-back approach to the concept of deadlines.
+
+| Participant      | Language[^1] | Planned torch receipt date | Actual torch receipt date | Torch |
+|------------------|--------------|---------------------------:|--------------------------:|:-----:|
+| Jake Penny       | Yaatláw      |          n/a               |          n/a              | [{{< fa file-pdf >}}](src/yaatláw.pdf){target="_blank" title="Download torch (with English translation)"} |
+| Arayaz           | Ruykkarraber |  1 Jan. 2024               | 31 Dec. 2023              | [{{< fa file-pdf >}}](src/ruykkarraber.pdf){target="_blank" title="Download torch (with English translation)"} |
+| Miles Wronkovich | Chielúú      |  8 Jan. 2024               |  7 Jan. 2024              | [{{< fa file-pdf >}}](src/chielúú.pdf){target="_blank" title="Download torch (with English translation)"} [{{< fa file-pdf >}}](src/chielúú-orthography.pdf){target="_blank" title="Download text in native orthography"} [{{< fa file-pdf >}}](src/chielúú-writing-system.pdf){target="_blank" title="Download guide to native orthography"} |
+| Magpie           | Jayodang     | 15 Jan. 2024               |  9 Jan. 2024              | [{{< fa file-pdf >}}](src/jayodang.pdf){target="_blank" title="Download torch (without English translation)"} |
+| Graham Hill      | Sivmikor     | 22 Jan. 2024               | 14 Jan. 2024              | [{{< fa file-pdf >}}](src/sivmikor.pdf){target="_blank" title="Download torch (with English translation)"} | |
+| Tethys           | Kam Pirngu   | 29 Jan. 2024               | 25 Jan. 2024              | [{{< fa file-pdf >}}](src/kam-pirngu.pdf){target="_blank" title="Download torch (with English translation)"} |
+| Keras Saryan     | Xwere Gonom  |  5 Feb. 2024               | 27 Jan. 2024              | [{{< fa file-pdf >}}](src/xwere-gonom.pdf){target="_blank" title="Download torch (without English translation)"} |
+| Jonathan Kane    | Sdefa        | 12 Feb. 2024               |  8 Feb. 2024              | [{{< fa file-pdf >}}](src/sdefa.pdf){target="_blank" title="Download torch (without English translation)"} |
+| Jake Penny       | Yaatláw      | 19 Feb. 2024               | 18 Feb. 2024              | n/a   |
+
+: {tbl-colwidths="[1,1]" .striped}
+
+[^1]: That is, the language translated *into* not *out of*.
+
+The timeline below further illustrates the amount of time taken to pass the torch by each participant except the relay master, Jake.
+
+
+```{r timeline}
+#| fig-width: 7
+#| fig-height: 2
+
+lts <- lts %>%
+    mutate(time_spent = difftime(lead(receipt_date), receipt_date))
+
+lts %>%
+    drop_na() %>%
+    mutate(x = "x") %>%
+    mutate(lab_adjust = (time_spent / 2) + difftime(receipt_date, "2023-12-31", units = "days")) %>%
+    ggplot(aes(fill = reorder(participant, -stage))) + 
+    geom_bar(aes(x = x, y = time_spent), stat = "identity") +
+    geom_label(aes(x, y = lab_adjust, label = participant), colour = "white", family = fontCustom, vjust = -0.75) +
+    geom_label(aes(x, y = lab_adjust, label = paste(time_spent, "days")), colour = "white", family = fontCustom, vjust = 0.75) +
+    coord_flip() +
+    theme(legend.position = "none") +
+    labs(x = element_blank(), y = "Days elapsed since receipt of the first torch") +
+    theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+```
+
+# 👀 The unveiling
+
+The results of the relay were revealed in a Google Meet call with all participants. This was recorded and later released publicly on [Let's Have a Bouba](https://www.youtube.com/@LetsHaveaBouba){target="_blank" title="Go to Let's Have a Bouba on YouTube"} on YouTube. The video can be viewed below, as can the slides used in the grand unveiling.
+
+{{< video https://www.youtube.com/embed/S6UTz5xcJ94 >}}
+
+{{< pdf src\lts-relay.pdf width=100% height=375 >}}
+
+# 🔥 The torches
+
+As well as being available for download [above](#participants-and-schedule), each torch document can be viewed in the tabs below. Some include an English translation, others not, but this can be seen for all languages in the video and slides [above](#the-unveiling) as well as on this page [below](#the-translation-trajectory). There is, of course, no second Yaatláw torch.
+
+::: {.panel-tabset}
+## Jake -- Yaatláw
+{{< pdf src\yaatláw.pdf width=100% height=500 >}}
+
+## Arayaz -- Ruykkarraber
+{{< pdf src\ruykkarraber.pdf width=100% height=500 >}}
+
+## Miles -- Chielúú
+{{< pdf src\chielúú.pdf width=100% height=500 >}}
+
+## Magpie -- Jayodang
+{{< pdf src\jayodang.pdf width=100% height=500 >}}
+
+## Graham -- Sivmikor
+{{< pdf src\sivmikor.pdf width=100% height=500 >}}
+
+## Tethys -- Kam Pirngu
+{{< pdf src\kam-pirngu.pdf width=100% height=500 >}}
+
+## Keras -- Xwere Gonom
+{{< pdf src\xwere-gonom.pdf width=100% height=500 >}}
+
+## Jonathan -- Sdefa
+{{< pdf src\sdefa.pdf width=100% height=500 >}}
+:::
+
+# 🔁 The translation trajectory
+
+Since, let's face, what you're probably most interested in is how the text evolved over the course of the relay, the text and English translation at each stage of the relay are reproduced below to make your life that little bit easier.
+
+## Jake -- Yaatláw
+
+::: columns
+::: {.column width="48%"}
+Chį́plį́ yu títsaw síílį sayshu pę́ę́?
+
+yu títsaw síílį fífyi tsáw maamaafúa mamąąyaw. tlá fífyi ę́bu'ų́bu síí maa pątsáá shąąfę́ hláw. guy sáw
+hlía plaatú su sų́tsú mamą áypa lawtsí saw pąsąlą. kaw tsapą́w bąątu tų́ lawtsí ikyi pąsąlą sáw ndląwkíí. yąą chųyąą títsaw sę́kaw u'áy mamą: mamą klu chį́plį́ yu títsaw síílį sayshu pę́ę́ ayaw. tąyśu (tuu) ayaw. la hlę́fa ayaw fu. yu atsę́ę́tsę́ pę́ę́. chį́fua síílį sayshu mam tą.
+
+shlí gyuayaa tsáw kúńi tsúa paa ńu ndlua tlúú Shááluta Káwti (michúafi kaypį́ nzą́fya witaychua tsúkí) ąątsę́ę́tsę́ Tsíshááta Nuucháánuhláta.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Why are we still looking for berries?
+
+A mother and daughter were out in the mountains looking for maqui berries. They see a tree with a lot of berries and stop to collect them. The mother accidentally stepped on a beehive, so bees flew out. They ran and hid until the bees went away, dropping their berries. They carried on looking for berries in the mountains. The daughter asked her mother, 'mum, why are we still looking for berries?ʼ. The mother replied 'be quiet my daughter! We are bonding and I still want berries.'
+
+The above text is inspired by a story by Charlotte Coté (2022) of the Nuu-Chah-Nulth community of Tseshaht.
+:::
+:::
+
+## Arayaz -- Ruykkarraber
+
+::: columns
+::: {.column width="48%"}
+Sunes sardeyg kiyurides brennas auri
+
+Maki sardeyg dese, maru arbu rutres ak kiyurides drer. Ruyk maki turen nrik radyeyr, daneyr, iban kibisbiskeuir. Maru gasekir, rudusen dureyr, tedus rad. Nrik giutir, ukreyn udibir; dusis ikateg radye tugnin ag. Agx! Rantin, sardeyn nrik adga!
+
+Dese yayir: "Mama! Sunes sardeyg kiyurides brennas auri kaur!?"
+
+Maru sterir: "Dese anasau! Insun kribaras adnambas."
+
+Marus sardeyg igat brenna.
+
+Resides di badu Charlotte Cotés-sasak badu bettay. Ad 2022es ak asau; ad Tseshahtnat, Nuu-chah-nulth runrikat bet.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Why we still look for berries
+
+A daughter and mother were looking for maqui berries in a cloud(y) forest. They saw a rich maqui tree, stopped, and picked them [the berries]. The mother fell over and crushed a beehive, and a swarm of bees appeared. They ran and hid themselves; the bees could not see them. Agh! They dropped the basket and berries!
+
+The daughter screamed: "Mother! Why are we still looking for berries!?"
+
+The mother answered: "Daughter, do not speak! We are becoming [better] friends."
+
+The mother still needs berries.
+
+The text above is a descendent of a story told (lit. made) by Charlotte Cotés. She told it in 2022; she is from Tseshaht and the Nuu-chah-nulth nation.
+:::
+:::
+
+## Miles -- Chielúú
+
+::: columns
+::: {.column width="48%"}
+Wáápa niyáá kúsa cháyu méhu ámú háyu faayee ííha pííne itsúút kúút ííchú uo'oláá. Kú hutʼíí úúpí ííha tʼáát sáá fi laa itsúút, háyu úúpí wikáá itsúút óákʼaa, kʼaang micháá mékʼu itsúút kúút. Méhu kʼoataa úúpí fi pʼóó máácha fofíí, shikíí fofíí óákʼaa micháá yaa. Kú hutʼíí úúpí sáá ííha pʼunáá kú, kʼaang fofíí kúút ííha kʼít kú. Kú kʼoataa suum kúsa fansóó itsúút shee, shikíí fu itsúút fi t'úú. Wáápa úúpí shímu méhu: “Xipʼo chʼáhí ííha pííne itsúút kúút, tʼááng púmu?”. Méhu ietlóó chʼoachúúm wáápa: “Pʼo kʼít chʼoachúúm! Xipʼo xú'e méhóápa háyu xipʼuu suosammáát.”. Méhu xáá féé mékʼu itsúút kúút.
+
+Ifo kúút háyu ketíí kééme, xaa Sháálút Kotéé háyu méhóápa háyu níchʼiifo. La ketíí chʼoachúúm áánu 2686, ííchú Sesháánát, háyu xaa Nuochaanúút háyu máácha xúóshí.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+A daughter and her pale mother were searching for blackcurrants in the forest. They saw and stopped walking toward a blackcurrant tree that grew many berries and began gathering berries. The mother fell on and crushed a beehive, when suddenly many bees began arriving. They ran away and hid themselves and the bees could not see them. They could not hold all the berries and dropped the bowl of berries. The daughter asked her mom: "Why are we searching for berries, again?". The mother responded to her daughter: "Stop talking! We are building our family bond!". The mother still wants to collect berries.
+
+The words written above are a story from the ancestors of Charlotte Cotés. It was told in 2022 in Tseshahtnat, a village of the Nuu-chah-nulth.
+:::
+:::
+
+## Magpie -- Jayodang
+
+::: columns
+::: {.column width="48%"}
+Joroge bang chaseko ri e maye hibi kel da umi lai ngo im chabe. Pertujes da abe umi waim dero da umi pauga ri nat waim, meldes im riyan ka im umi. Tinge e maye ri hanak da chike, has ki ike pauga. Natasijes ri igehijes, ri pertu te lejes yi as ike. Wisor lejes im umi ri tingem wai yi im ngor kajes. Kim e chaseko wai e maye ihim, "Sambok jorogerau da umi lai kina?" San e maye wai e chaseko ihim, "San le mo. Derorau da yusu wai jes adabang." Esu e maye im riyan ka umi lai ngo sabi pauga.
+
+Ihim odang im odamauga ka e adabang ka Salut Kote. San te waim olih gat tora ka Sesanat na dakoh pauga jikimai jikedik nyayang ri mai ngo im jak Nechanut.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+A girl and her pale mother searched for black berries in the forest. They saw a tree that had grown many berries and walked toward it, then began taking the berries. The mother fell and broke a beehive and many bees came. They ran and the hid, and they were not seen by the bees. They could not hold the berries and they fell from their hands.
+
+The girl asked her mother, "Why are we looking for black berries once again?"
+
+The mother replied to the girl, "You donʼt talk. We make a knot for the ancestors."
+
+The mother wanted to gather black berries many times.
+
+The words written are Salut Kote's ancestor's story. It is said that over 6862 people of Sesanat live in the Nechanat village.
+:::
+:::
+
+## Graham -- Sivmikor
+
+::: columns
+::: {.column width="48%"}
+Heni tsanni zbas hen a sanda moy jo ney Sesanat zan ivetyo neh Netxanutyo. Divi tsan, ehu jow makahalowh ney Salut Koteyh fanda, ev ex muvna na fen wotu ho dalinda.
+
+Dilavna a nedaz dembi nu banzayn reyz nofte zulevleg. Veyd ve kuji jaw zulevleg ster, ajov nofte. Rexponyu, rozne rekyo mar zinijni xoz, jreg sav ava ner ron murug. Behre ro heya, mawxus gak, gow wol mi zulevlegza zvus nofte kuvi. Henvawn nuy "Twarnam, nofte zulevleg reyn zow?" Henzivna nuy "Kavuxkays la halay! Divi xnofte, bas manal snel ho dalinda!"
+
+Gow nofte vay ava ner o zulevleg jul yavri ey xah ster zay kasi. Uvi xnofte, muvna nu tabra kehu zinijay, gow skovna ho dalinay.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+This is a story told by the seven thousand or so Sesanat people living in the town of Nechanut. It's about the mythological character Salut Kote, and how she learned to respect her ancestors.
+
+One day Salut Kote's mother led her into the forest to gather blueberries. They saw a blueberry bush and started picking from it. Her mother stumbled and broke a beehive, and the bees swarmed out and attacked them. They ran away and managed to escape from the bees, but this made them drop all the blueberries. She asked her mother, "Why did we gather blueberries, anyway?" Her mother replied, "Don't ask such questions! Gathering blueberries ties us to our ancestors!"
+
+So they gathered blueberries again the next day, and many more times after that. Each time, the gathering reminded her of the bees... which reminded her of her ancestors.
+:::
+:::
+
+## Tethys -- Kam Pirngu
+
+::: columns
+::: {.column width="48%"}
+Ndaak punnu nawa-mang ka ti-ram Tiranat ta nuppa ruk Nittjanuttju. Ramba ti-nawa Tarut Kutti tam-mang miwak nggarngawi nuppa ti-mit mbi, ku pambam num ti-ramba nua ti-mama ngiwa-wir.
+
+Ti-mamaak-kir nanawa kir ri ruk piu-mang nua ti-rikki rakki tamut. Pam kirra muttau-mang kunngur tak rakki tamut, ku nanamu ri ti-rikki. Puppurrat ti-mama-wir ku ririmat kirrak rundi tinik nggirau-mang. Ka ti-wa, ti-rinikkak nggirappak taak kunggun niri-mang, kw angur Tarut Kutti ku ti-mama-wir. Ti-naak kaawaa ti-rinik nggirap, ku tak ti-wak-kirra puppurrat ti-rakki tamut tittikki.
+
+Tarut Kattu kangam ri ti-mamma-wir, "Ndaraak tikki rakki tamut nua min?"
+
+Ti-mama-wir kangam ri kir, "Kam ik ti-wi! Pam nik ndara ri ti-mama ngiwa-nara ka ti-rikki rakki tamut!"
+
+Rin ti-wa, kirrak tittikki rakki tamut tak pikkat ta. Tak ti-rikki, pam ranuk Tarut Kattu ti-nawa tinik nggirap ku ti-nawa mama ngiwa.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Iʼm spinning a story from the many Tiranat people in the land of Nittjanuttju. Hear the story of Tarut Kutti, who was a great person in the far past, and who learned to respect her ancestor.
+
+Her mother lead her to a forest to pick blueberries. They saw a bush that was heavy with blueberries, and started gathering. Her mother fell and accidentally broke a beehive. From this, the bees formed a cloud and, like a wave crashing over a ship, overwhelmed Tarut Kutti and her mother. The pair left the bees, and with their flight the gathered blueberries fell.
+
+Tarut Kattu said to her mother, "Why do we pick blueberries?"
+
+Her mother said to her, "Donʼt say that! We are bound to our ancestor by the blueberry picking!"
+
+After this, they picked blueberries for many days. With the picking, Tarut Kattu was taught the story of the bees and the story of the ancestor.
+:::
+:::
+
+## Keras -- Xwere Gonom
+
+<!-- <center> -->
+<!-- <audio controls> -->
+<!--   <source src="src/xwere-gonom.mp3" type="audio/mpeg"> -->
+<!--   <source src="src/xwere-gonom.wav" type="audio/wav"> -->
+<!-- Your browser does not support the audio element. -->
+<!-- </audio> -->
+<!-- </center> -->
+
+::: columns
+::: {.column width="48%"}
+Geum aṛaṭaǧa deme ṭeǧeṛi na Ḍiṛanaḍaṛin ken Niidžanoodžom. Odohgiš ṭeǧeṛi isaṭaǧa Ḍaṛoḍa Gooḍige, xadla isekiipe ži ło’om gobom isadlaara ži daǧin geen yiḍibauyii ǧopa na dzii’in gobom siin.
+
+Somodloamii ǧwama siin na xiidlin giažan na tsamiran giažan goamom. Goliiš iṭhanii siid, yapopo’oga dan giažan goamom, seke’liǧwed, iḍa’lian siid tsama. Soḍogii ǧwama siin, gehn gizin ihi’gian sii, ših iwaa’ian gizid, isoxoomiid Ḍaṛoḍa Gooḍige dzi ǧwamaga siin. Simipeǧwiid bee ken gizirin, setši’giǧwed, ołobii siid giaža goamom yitsa’minen.
+
+Sithešii Ḍaṛoḍ Gooḍi ǧwamaga siin: Neteen atsama yah giaža goamom?
+
+Soyoṛii ǧwama siin: Ke’ ihdiš žod meh! Dan tsamiran giažan goamom yegwiaḍeh yah[^2] na dzii’in gobom yahin!
+
+Geum, ṭianin hoš aratsamira siid giaža goamom. Ken tsamiran, siitšii Ḍaṛoḍa Gooḍige ṭeǧeṛi ihaṭaǧad gizira dzi ṭeǧeṛi isaṭaǧa dzii’ge gobom.
+:::
+
+[^2]: This should read *yahga* and instead of *yah*. The error is reproduced here to match the torch document.
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Now I shall tell you a story from the Ḍiṛanaḍ people of Niidžanoodžo. Listen to the story of Ḍaṛoḍ Gooḍi, a strong person who lived there long ago and who was taught respect for his ancestors.
+
+His mother led him to an orchard for the blue fruit harvest. They saw a plant which was laden with blue fruit and enthusiastically began picking. His mother fell and broke a beehive. Because of this, the bees formed a cloud which overwhelmed Ḍaṛoḍ Gooḍi and his mother. The two of them fled from the bees, quickly dropping the blue fruit which had been picked.
+
+Ḍaṛoḍ Gooḍi asked his mother, "What do we pick blue fruit for?"
+
+His mother replied, "Don’t say such a thing! It is through the blue fruit harvest that we are connected to our ancestors!"
+
+After this, they picked blue fruit for many days. It is from the harvest that Ḍaṛoḍ Gooḍi was given the story of the bees and the story of the ancestors.
+:::
+:::
+
+## Jonathan -- Sdefa
+
+::: columns
+::: {.column width="48%"}
+![](src/sdefa.light.png)
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+There once was a person who lived in this place long, long ago and who learned to respect their ancestors. I will tell their story. Listen to it!
+
+The person's parent brought them into these woods so that they could gather blueberries. They saw a plant with many berries, so they very happily began to collect them.
+
+The parent knocked down a beehive, causing the bees to emerge and swarm around them! The two quickly ran away from the bees, dropping the berries they had gathered.
+
+The child asked, "Why do we gather blueberries?"
+
+The parent responded, "Don't say that! By gathering blueberries, we are connected with our ancestors."
+
+After this, the two gathered blueberries for many days.
+
+There once was a person who learned to respect their ancestors. Now I have told you their story.
+:::
+:::
+
+## Jake -- Yaatláw (reprise)
+
+::: columns
+::: {.column width="48%"}
+Tlua sę́kaw mya tíaku fulų yu matį́ sífį kuu day tsúkú. La yu saká ndlua pú táńi tlua fu úlu plą́ysú pítsų́ sunąy ląlą.
+
+Mya la shąąfę́ síí'úú úlu maama yąą sífį ląwnu. Tlá síí'úú si ishį́ shąąfę́ síí'úúlų hláw guy shíw fua. Kaw guy sáw sų́tsú hlų́y matį́ pąsąlą ląwnu. Guy sáw lawtsí yuslafu hlálą pąsąlą, áypa sáw síí'úúlų tsapą́w lawtsí. Uʼáy ląwnu sífį: chį́plį́ yu títsaw síí'úúlų pę́ę́? Tlua lawtsí: tsáw tlua hlų́lų chę́ śę́. Yu shąąfę́ síí'úúlų pę́ę́ tulu yąą tíakulų pę́ę́. Ngayńay yu shąąfę́ síí'úúlų.
+
+Kaw tlua ndlua pú sífį kúú pítsų́ ńu sunąyyi tíakulų tuu tśilį fu.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Once upon a time there lived a person who belonged to a clan. Come listen to the story I will tell of how they learned to respect their people!
+
+A parent went into the forest to collect blueberries with the person. They saw a blueberry bush and started collecting berries contentedly. The parent knocked down a hive that bees were living in. Because the bees came out and surrounded them, they dropped the blueberries and left running. The person asked the parent, 'why are we collecting blueberries?' The parent says 'don't say these words. We collect blueberries, connecting us with our ancestors.' They collected blueberries for many days.
+
+I have told you the story of the person who learned about respecting the ancestors.
+:::
+:::
+
+# 💅 How it started; how it's going
+
+And, because, why not, here is a direct comparison of the starting (left) and final (right) texts in both Yaatláw and English.
+
+---
+
+::: columns
+::: {.column width="48%"}
+Chį́plį́ yu títsaw síílį sayshu pę́ę́?
+
+yu títsaw síílį fífyi tsáw maamaafúa mamąąyaw. tlá fífyi ę́bu'ų́bu síí maa pątsáá shąąfę́ hláw. guy sáw
+hlía plaatú su sų́tsú mamą áypa lawtsí saw pąsąlą. kaw tsapą́w bąątu tų́ lawtsí ikyi pąsąlą sáw ndląwkíí. yąą chųyąą títsaw sę́kaw u'áy mamą: mamą klu chį́plį́ yu títsaw síílį sayshu pę́ę́ ayaw. tąyśu (tuu) ayaw. la hlę́fa ayaw fu. yu atsę́ę́tsę́ pę́ę́. chį́fua síílį sayshu mam tą.
+
+shlí gyuayaa tsáw kúńi tsúa paa ńu ndlua tlúú Shááluta Káwti (michúafi kaypį́ nzą́fya witaychua tsúkí) ąątsę́ę́tsę́ Tsíshááta Nuucháánuhláta.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Tlua sę́kaw mya tíaku fulų yu matį́ sífį kuu day tsúkú. La yu saká ndlua pú táńi tlua fu úlu plą́ysú pítsų́ sunąy ląlą.
+
+Mya la shąąfę́ síí'úú úlu maama yąą sífį ląwnu. Tlá síí'úú si ishį́ shąąfę́ síí'úúlų hláw guy shíw fua. Kaw guy sáw sų́tsú hlų́y matį́ pąsąlą ląwnu. Guy sáw lawtsí yuslafu hlálą pąsąlą, áypa sáw síí'úúlų tsapą́w lawtsí. Uʼáy ląwnu sífį: chį́plį́ yu títsaw síí'úúlų pę́ę́? Tlua lawtsí: tsáw tlua hlų́lų chę́ śę́. Yu shąąfę́ síí'úúlų pę́ę́ tulu yąą tíakulų pę́ę́. Ngayńay yu shąąfę́ síí'úúlų.
+
+Kaw tlua ndlua pú sífį kúú pítsų́ ńu sunąyyi tíakulų tuu tśilį fu.
+:::
+:::
+
+---
+
+::: columns
+::: {.column width="48%"}
+Why are we still looking for berries?
+
+A mother and daughter were out in the mountains looking for maqui berries. They see a tree with a lot of berries and stop to collect them. The mother accidentally stepped on a beehive, so bees flew out. They ran and hid until the bees went away, dropping their berries. They carried on looking for berries in the mountains. The daughter asked her mother, 'mum, why are we still looking for berries?ʼ. The mother replied 'be quiet my daughter! We are bonding and I still want berries.'
+
+The above text is inspired by a story by Charlotte Coté (2022) of the Nuu-Chah-Nulth community of Tseshaht.
+:::
+
+::: {.column width="4%"}
+<!-- mind the gap -->
+:::
+
+::: {.column width="48%"}
+Once upon a time there lived a person who belonged to a clan. Come listen to the story I will tell of how they learned to respect their people!
+
+A parent went into the forest to collect blueberries with the person. They saw a blueberry bush and started collecting berries contentedly. The parent knocked down a hive that bees were living in. Because the bees came out and surrounded them, they dropped the blueberries and left running. The person asked the parent, 'why are we collecting blueberries?' The parent says 'don't say these words. We collect blueberries, connecting us with our ancestors.' They collected blueberries for many days.
+
+I have told you the story of the person who learned about respecting the ancestors.
+:::
+:::
+
+# 🫐 Lagniappe
+
+Finally, just for a bit of fun, the table and plots in the tabs below show how the length of the text and its English translation changed over the course of the relay in terms of number of both words and characters.[^3]
+
+[^3]: All conlang texts use the romanisation as the basis for this with the exception of Sdefa for which the orthography is used and, additionally, characters and words are equated for Sdefa.
+
+::: {.panel-tabset}
+
+## Full table
+
+```{r lts_tbl}
+lts %>%
+    select(-receipt_date, -time_spent) %>%
+    rename(
+        Stage = stage,
+        Participant = participant,
+        Language = language,
+        `N words (conlang)`  = nword_lg,
+        `N characters (conlang)` = nchar_lg,
+        `N words (English)` = nword_en,
+        `N characters (English)` = nchar_en
+        ) %>%
+    knitr::kable()
+```
+
+## N words in conlang text
+
+```{r nword_lg}
+lts %>%
+    ggplot(aes(x = stage, y = nword_lg))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text(aes(label = language, colour = language, family = fontCustom), nudge_y = -10) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    scale_y_continuous(breaks = pretty_breaks()) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N words in conlang text")
+```
+
+## N characters in conlang text
+
+```{r nchar_lg}
+lts %>%
+    ggplot(aes(x = stage, y = nchar_lg))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text(aes(label = language, colour = language, family = fontCustom), nudge_y = -25) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N characters in conlang text")
+```
+
+## N words in English translation
+
+```{r nword_en}
+lts %>%
+    ggplot(aes(x = stage, y = nword_en))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text(aes(label = language, colour = language, family = fontCustom), nudge_y = -10) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N words in English translation")
+```
+
+## N characters in English translation
+
+```{r nchar_en}
+lts %>%
+    ggplot(aes(x = stage, y = nchar_en))+
+    geom_line(alpha = 0.25) +
+    geom_point(aes(colour = language)) +
+    geom_text(aes(label = language, colour = language, family = fontCustom), nudge_y = -25) +
+    scale_x_continuous(breaks = seq(0, 9, 1)) +
+    expand_limits(y = 0) +
+    theme(legend.position = "none") +
+    labs(x = "Relay stage", y = "N characters in English translation")
+```
+
+:::

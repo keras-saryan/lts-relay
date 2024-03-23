@@ -5,7 +5,7 @@ project:
 website:
  title: "LTS Relay"
  description: "A conlang relay showcase"
- site-url: https://keras-saryan.github.io/lts-relay
+ site-url: https://keras-saryan.github.io/lts-relay/
  favicon: assets/img/favicon.ico
  navbar:
   collapse-below: xl
@@ -19,6 +19,8 @@ format:
   theme:
    light: assets/light.scss
    dark: assets/dark.scss
+  grid:
+   gutter-width: 0rem
   toc: true
 
 editor: source

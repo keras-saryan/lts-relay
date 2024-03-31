@@ -79,7 +79,7 @@ The table below shows the eight participants that took part in the relay, the la
 | Graham Hill      | Sivmikor     | 22 Jan. 2024               | 14 Jan. 2024              | [{{< fa file-pdf >}}](src/sivmikor.pdf){target="_blank" title="Download torch (with English translation)"} | |
 | Tethys           | Kam Pirngu   | 29 Jan. 2024               | 25 Jan. 2024              | [{{< fa file-pdf >}}](src/kam-pirngu.pdf){target="_blank" title="Download torch (with English translation)"} |
 | Keras Saryan     | Xwere Gonom  |  5 Feb. 2024               | 27 Jan. 2024              | [{{< fa file-pdf >}}](src/xwere-gonom.pdf){target="_blank" title="Download torch (without English translation)"} |
-| Jonathan Kane    | Sdefa        | 12 Feb. 2024               |  8 Feb. 2024              | [{{< fa file-pdf >}}](src/sdefa.pdf){target="_blank" title="Download torch (without English translation)"} |
+| Jonathan Kane    | Sdefa        | 12 Feb. 2024               |  8 Feb. 2024              | [{{< fa file-pdf >}}](src/sdefa.pdf){target="_blank" title="Download torch (without English translation)"} [{{< fa video >}}](https://www.tumblr.com/mindutme/746399593948921856/sdefa-sdaturday-11){target="_blank" title="Video of Sdefa text (with English translation) on Jonathan's Tumblr"} |
 | Jake Penny       | Yaatláw      | 19 Feb. 2024               | 18 Feb. 2024              | n/a   |
 
 : {tbl-colwidths="[1,1]" .striped}
@@ -338,7 +338,7 @@ Soyoṛii ǧwama siin: Ke’ ihdiš žod meh! Dan tsamiran giažan goamom yegwia
 Geum, ṭianin hoš aratsamira siid giaža goamom. Ken tsamiran, siitšii Ḍaṛoḍa Gooḍige ṭeǧeṛi ihaṭaǧad gizira dzi ṭeǧeṛi isaṭaǧa dzii’ge gobom.
 :::
 
-[^2]: This should read *yahga* and instead of *yah*. The error is reproduced here to match the torch document.
+[^2]: This should read *yahga* not *yah*. The error is reproduced here to match the torch document.
 
 ::: {.column width="4%"}
 <!-- mind the gap -->
